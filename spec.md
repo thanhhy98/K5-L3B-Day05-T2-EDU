@@ -1,13 +1,13 @@
 # Bài nộp LAB5 — Track 2 · Nhóm [tên]
 
 ## Thành viên nhóm
-**Lớp:** ____ · **Bàn / zone:** ____ · **Track:** ____
+**Lớp:** L3B · **Bàn / zone:** 5 · **Track:** T2 - Giáo dục
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Võ Thị Phương Nhung | 2A202603918 |  |
+| Nguyễn Tiến Đạt | 2A202603922 |  |
+| Nguyễn Minh Thành | 2A202603884 |  |
 
 ## §1. Lát cắt & phạm vi
 - Lát cắt (chép từ track).
