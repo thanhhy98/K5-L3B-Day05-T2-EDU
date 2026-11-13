@@ -1,4 +1,4 @@
-# Bài nộp LAB5 — Track 2 · Nhóm [tên]
+# Bài nộp LAB5 — Track 2 · Nhóm EDU
 
 ## Thành viên nhóm
 **Lớp:** L3B · **Bàn / zone:** 5 · **Track:** T2 - Giáo dục
