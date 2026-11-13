@@ -106,8 +106,8 @@ Khi bật tuỳ chọn **"Hiện số chú thích HAX/PAIR"**, các huy hiệu t
 | **R6 · Tốt là gì** | 5 | 3 tiêu chí Pass/Fail định lượng, test thực tế trên 2 ca khó, nhận diện rủi ro jailbreak tồn dư tại `spec.md` §6. |
 | **R7 · Demo & Phân công** | 5 | Kế hoạch trình bày 3 người phân định rõ ràng, chuẩn bị sẵn câu trả lời ca lạ tại `spec.md` §7. |
 | **Bonus · Xung phong Demo** |   | Đăng ký thuyết trình trực tiếp trước lớp trong 30 phút demo. |
-| **Bonus · Live AI Call** |   | Tích hợp modal gọi Gemini 1.5 Flash an toàn bảo mật ngay trên client. |
-| **Tổng điểm hướng tới** | **100 / 100** | *(Đạt mức trần tối đa của quy chế LAB5)* |
+| **Bonus · Live AI Call** | 3  | Tích hợp modal gọi Gemini 1.5 Flash an toàn bảo mật ngay trên client. |
+| **Tổng điểm hướng tới** | **103 / 100** | *(Đạt mức trần tối đa của quy chế LAB5)* |
 
 ---
 *Tài liệu hướng dẫn kỹ thuật thuộc dự án của Nhóm EDU — AI20K K5 LAB5 Track 2.*
