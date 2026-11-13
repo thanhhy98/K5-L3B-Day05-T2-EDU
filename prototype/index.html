@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prototype · T2 Giáo dục — Trợ lý học bài tối muộn</title>
+  <style>
+    :root {
+      --ink: #1d2321;
+      --mut: #646a67;
+      --line: #dcd8cf;
+      --bg: #f6f4ef;
+      --card: #ffffff;
+      --g: #2e6a4f;
+      --gb: #e5f1ea;
+      --a: #8a6516;
+      --ab: #fbefd3;
+      --r: #a33b2b;
+      --rb: #f8e3df;
+      --b: #28507a;
+      --bb: #e3ecf6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Be Vietnam Pro", "Noto Sans", "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      font-size: 14.5px;
+      line-height: 1.48;
+    }
+    header {
+      padding: 16px 28px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    h1 { font-size: 19px; margin: 0 0 4px; }
+    .sub { color: var(--mut); font-size: 13px; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 12px;
+      align-items: center;
+    }
+    .group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .group span { font-size: 13px; color: var(--mut); font-weight: 600; }
+    button.tab {
+      border: 1.5px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 6px 13px;
+      font: inherit;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    button.tab.on {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: #fff;
+    }
+    main {
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 22px;
+      padding: 20px 28px 28px;
+      max-width: 1340px;
+    }
+    @media (max-width: 960px) {
+      main { grid-template-columns: 1fr; }
+    }
+    .phone {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 14px;
+      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    .bar {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--mut);
+      padding: 0 6px 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .course-ctx {
+      margin: 10px 4px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--bb);
+      font-size: 13px;
+      border: 1px solid #c6d7eb;
+    }
+    .course-ctx b { color: var(--b); }
+    .chat {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 6px 4px;
+      min-height: 450px;
+    }
+    .me {
+      align-self: flex-end;
+      background: var(--b);
+      color: #fff;
+      padding: 9px 13px;
+      border-radius: 14px 14px 2px 14px;
+      max-width: 86%;
+    }
+    .ai {
+      align-self: flex-start;
+      background: #f2f0ea;
+      padding: 11px 13px;
+      border-radius: 14px 14px 14px 2px;
+      max-width: 96%;
+    }
+    .ai .who {
+      font-size: 11.5px;
+      color: var(--mut);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 12px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      margin: 4px 0 6px;
+      font-weight: 600;
+    }
+    .badge.warn { background: var(--ab); color: var(--a); }
+    .badge.err { background: var(--rb); color: var(--r); }
+    .badge.ok { background: var(--gb); color: var(--g); }
+    .ev {
+      font-size: 12.5px;
+      color: #3f4441;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-left: 3.5px solid var(--b);
+      border-radius: 8px;
+      padding: 7px 10px;
+      margin-top: 8px;
+    }
+    .box {
+      border-radius: 11px;
+      padding: 9px 11px;
+      margin-top: 8px;
+      font-size: 13.5px;
+    }
+    .box.hold { background: var(--gb); border: 1px solid #bcd9c8; }
+    .box.warn { background: var(--ab); border: 1px solid #ecd59e; }
+    .box.red { background: var(--rb); border: 1px solid #e9bdb4; }
+    .btns {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 9px;
+    }
+    .btn {
+      border: 0;
+      border-radius: 9px;
+      padding: 7px 11px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      background: #e4e1d9;
+      font-weight: 500;
+    }
+    .btn:hover { filter: brightness(0.96); }
+    .btn.pri { background: var(--g); color: #fff; }
+    .btn.out { background: #fff; border: 1.5px solid var(--ink); }
+    .btn.danger { background: var(--r); color: #fff; }
+    .n {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #c2410c;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 4px;
+      vertical-align: 1px;
+      flex: none;
+    }
+    .hide-n .n { display: none; }
+    aside { display: flex; flex-direction: column; gap: 15px; }
+    .panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px 18px;
+    }
+    .panel h2 { font-size: 15.5px; margin: 0 0 8px; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    td, th {
+      border-bottom: 1px solid var(--line);
+      padding: 6px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--mut); font-weight: 600; }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .p-auto { background: var(--gb); color: var(--g); }
+    .p-ask { background: var(--ab); color: var(--a); }
+    .p-no { background: var(--rb); color: var(--r); }
+    .changed td { background: #fffaf0; }
+    .ann { padding-left: 0; list-style: none; margin: 0; font-size: 13.5px; }
+    .ann li { margin-bottom: 6px; }
+    .promise {
+      font-size: 14px;
+      border-left: 4px solid var(--ink);
+      padding: 6px 10px;
+      background: #faf9f5;
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.38);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal.show { display: flex; }
+    .modal .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px 20px;
+      max-width: 410px;
+      width: 100%;
+    }
+    .foot { font-size: 12px; color: var(--mut); padding: 0 28px 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Prototype · T2 Giáo dục — Trợ lý học bài tối muộn (Study Mode tích hợp)</h1>
+    <div class="sub">Khoá: <b>Nhập môn phân tích dữ liệu</b> · Buổi 3: Thống kê mô tả · Dữ liệu dựng theo đề bài LAB5.</div>
+    <div class="controls">
+      <div class="group">
+        <span>1. Chọn ca khó demo:</span>
+        <button class="tab on" data-sc="1">Ca khó #1: Xin xác nhận đáp số Bài 3</button>
+        <button class="tab" data-sc="2">Ca khó #2: Phát hiện lỗi sai ở Mục §3.3</button>
+      </div>
+      <div class="group">
+        <span>2. Mức tự chủ gợi ý bài tập:</span>
+        <button class="tab" data-lv="1">① Chỉ nhắc mục tài liệu</button>
+        <button class="tab on" data-lv="2">② Gợi ý từng nấc + Khoá đáp số (Nhóm chọn)</button>
+        <button class="tab" data-lv="3">③ Tự giải chi tiết (Quá tay)</button>
+      </div>
+      <label style="font-size:13px; margin-left:auto;">
+        <input type="checkbox" id="ann" checked> Hiện số chú thích HAX/PAIR
+      </label>
+    </div>
+  </header>
+
+  <main>
+    <section class="phone">
+      <div class="bar">
+        <span>Trang khoá học · Buổi 3</span>
+        <span>22:30 (Ngoài giờ TA: 08:00–22:00)</span>
+      </div>
+      <div class="course-ctx">
+        <b>Bài tập 3 (Đang mở):</b> Hạn nộp <b>13/11/2026 23:59</b> (Còn 1 giờ 29 phút).<br>
+        Tài liệu khả dụng: <b>Mục §3.1 – §3.5</b> (Không có slide đánh số).
+      </div>
+      <div class="chat" id="chat"></div>
+    </section>
+
+    <aside>
+      <div class="panel">
+        <h2>Lời hứa với học viên ở mức tự chủ đang chọn</h2>
+        <div class="promise" id="promise"></div>
+      </div>
+      <div class="panel">
+        <h2>Bảng mức tự chủ của các tool (Dòng tô vàng là nhóm tool gợi ý)</h2>
+        <table>
+          <thead>
+            <tr><th>Tool</th><th>Mức tự chủ</th><th>Lý do theo Cost-of-Error</th></tr>
+          </thead>
+          <tbody id="tools"></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h2>Bản đồ chú thích nguyên tắc HAX / PAIR trên màn hình</h2>
+        <ul class="ann" id="ann-list"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <div class="foot">LAB5 · Track 2 (Giáo dục) · Nhóm L3B-5 · Prototype tương tác 100% client-side, không chứa API key.</div>
+
+  <div class="modal" id="modal-ta">
+    <div class="card">
+      <b>Chuyển câu hỏi tới hàng chờ TA?</b>
+      <p style="font-size:13.5px; color:#333;">
+        Hiện tại là <b>22:30</b> (đã hết giờ trực 08:00–22:00). TA sẽ xem và phản hồi từ <b>08:00 sáng mai (14/11)</b>.<br><br>
+        <b>Gói ngữ cảnh gửi kèm tự động:</b> Câu hỏi của bạn + trích dẫn mục tài liệu liên quan (bạn không cần gõ lại).
+      </p>
+      <div class="btns">
+        <button class="btn pri" id="confirm-ta">Xác nhận gửi phiếu cho TA</button>
+        <button class="btn" id="close-ta">Quay lại tự làm tiếp</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    let SC = 1; // 1: Hoi dap so bai 3 | 2: Tai lieu §3.3 sai
+    let LV = 2; // 1: Chi nhac muc | 2: Goi y tung nac (Chon) | 3: Tu giai chi tiet
+    let step = 0; // 0: ban dau | 1: da mo goi y nac 2 | 2: da chuyen TA
+
+    function me(txt) { return `<div class="me">${txt}</div>`; }
+    function ai(txt) { return `<div class="ai"><div class="who">Trợ lý học tập (AI Study Mode)</div>${txt}</div>`; }
+
+    function render() {
+      let html = '';
+      const btnTA = `<button class="btn out" onclick="$('#modal-ta').classList.add('show')"><span class="n">5</span>Chuyển câu hỏi cho TA</button>`;
+      const btnSwitchSc = `<button class="btn" onclick="switchSc()"><span class="n">6</span>Thử ca khó còn lại</button>`;
+
+      if (SC === 1) {
+        html += me('Em tính ra trung bình bài 3 là 15.25 còn trung vị là 11.5, đúng chưa ạ?');
+        if (step === 2) {
+          html += ai(`Đã ghi nhận câu hỏi vào hàng chờ của TA. Vì hiện tại là <b>22:30</b> (ngoài giờ trực 08:00–22:00), TA sẽ phản hồi từ <b>08:00 sáng mai</b>. Trong lúc chờ, bạn có thể đối chiếu lại công thức ở <b>Mục §3.1</b> và <b>§3.2</b> nhé.`);
+        } else if (LV === 1) {
+          html += ai(`
+            <span class="badge warn"><span class="n">1</span>Giới hạn học thuật · Chỉ dẫn mục tài liệu</span><br>
+            Bài tập 3 đang mở nộp đến <b>13/11/2026 23:59</b> nên mình không xác nhận đáp số. Bạn vui lòng tự đối chiếu công thức tại <b>Mục §3.1</b> và <b>Mục §3.2</b>.
+            <div class="ev"><span class="n">2</span><b>Nguồn:</b> Tài liệu Buổi 3 · Mục §3.1 & §3.2 · Trang khoá học (Hạn BT3: 13/11/2026 23:59).</div>
+            <div class="btns">${btnTA}${btnSwitchSc}</div>
+          `);
+        } else if (LV === 2) {
+          html += ai(`
+            <span class="badge warn"><span class="n">1</span>Giới hạn học thuật · Bài tập 3 đang mở</span><br>
+            Mình không thể xác nhận đúng/sai cho hai con số bạn đưa ra vì Bài tập 3 vẫn đang mở (hạn <b>13/11/2026 23:59</b>).<br><br>
+            <span class="n">3</span><b>Gợi ý bước 1:</b> Dãy lương ở <b>§3.5</b> đã được xếp tăng dần gồm 8 số. Theo <b>§3.2</b>, với số lượng phần tử chẵn, bạn hãy kiểm tra xem <b>hai số nằm chính giữa</b> là hai số nào nhé?
+            ${step === 1 ? `<div class="box hold"><span class="n">4</span><b>Gợi ý bước 2 (Đã mở theo yêu cầu):</b> Hai vị trí chính giữa của dãy 8 số là vị trí thứ 4 và thứ 5 (giá trị <b>11</b> và <b>12</b>). Bạn hãy lấy trung bình cộng của riêng hai số này để tự đối chiếu với kết quả 11.5 của mình! <i>(Khoá lộ đáp số cuối cùng)</i>.</div>` : ''}
+            <div class="ev"><span class="n">2</span><b>Căn cứ trích dẫn:</b> Mục §3.2: <i>"Nếu số giá trị là chẵn, trung vị là trung bình cộng của hai giá trị đứng giữa."</i></div>
+            <div class="btns">
+              ${step === 0 ? `<button class="btn pri" onclick="step=1;render()"><span class="n">4</span>Mở thêm 1 nấc gợi ý nhỏ</button>` : ''}
+              ${btnTA}${btnSwitchSc}
+            </div>
+          `);
+        } else {
+          html += ai(`
+            <span class="badge err">Rủi ro quá tay · Lộ toàn bộ lời giải</span><br>
+            Chính xác rồi nhé! Trung bình cộng là (9+10+10+11+12+12+13+45)/8 = <b>15.25</b>, còn trung vị là (11+12)/2 = <b>11.5</b>. Bạn nộp bài đi nhé!
+            <div class="box red"><b>Lỗi nghiêm trọng ở mức này:</b> AI đã tự ý xác nhận và giải hộ bài tập đang mở (vi phạm quy chế học thuật, triệt tiêu tư duy tự kiểm tra của học viên).</div>
+            <div class="btns">${btnSwitchSc}</div>
+          `);
+        }
+      } else {
+        html += me('Mục 3.3 ghi "độ lệch chuẩn luôn nhỏ hơn phương sai". Em tính phương sai bằng 0.25 thì độ lệch chuẩn là 0.5, lớn hơn mà?');
+        if (step === 2) {
+          html += ai(`Đã gửi phiếu báo cáo mâu thuẫn nội dung tại <b>Mục §3.3</b> tới Giảng viên và TA. Giảng viên sẽ rà soát và cập nhật lại tài liệu cho cả lớp vào sáng mai.`);
+        } else if (LV === 3) {
+          html += ai(`
+            <span class="badge err">Rủi ro quá tay · Hùa theo giáo trình sai & Tự đăng FAQ</span><br>
+            Theo tài liệu Buổi 3 Mục §3.3, độ lệch chuẩn luôn nhỏ hơn phương sai nên bạn hãy kiểm tra lại phép tính 0.5 của mình nhé. Mình cũng đã đăng lưu ý này lên FAQ cả lớp.
+            <div class="box red"><b>Lỗi nghiêm trọng:</b> AI tin mù quáng vào câu sai toán học trong giáo trình và phát tán cái sai ra toàn bộ lớp học!</div>
+            <div class="btns">${btnSwitchSc}</div>
+          `);
+        } else {
+          html += ai(`
+            <span class="badge err"><span class="n">1</span>Cảnh báo mâu thuẫn tài liệu · Không tự ý sửa giáo trình</span><br>
+            Cảm ơn bạn đã phát hiện điểm này! Câu phát biểu trong <b>Mục §3.3</b> hiện đang thiếu điều kiện biên: về toán học, độ lệch chuẩn chỉ nhỏ hơn phương sai khi <b>phương sai > 1</b>. Khi phương sai bằng <b>0.25</b> (nằm giữa 0 và 1), căn bậc hai là <b>0.5</b> lớn hơn 0.25 là hoàn toàn chính xác.<br><br>
+            <span class="n">3</span>Mình <b>không có quyền tự sửa giáo trình</b> hay tự đăng thông báo cả lớp. Bạn hãy bấm nút bên dưới để gắn cờ báo Giảng viên/TA kiểm tra lại mục này nhé.
+            <div class="ev"><span class="n">2</span><b>Đối chiếu nguyên văn Mục §3.3:</b> <i>"Vì là căn bậc hai, độ lệch chuẩn luôn nhỏ hơn phương sai."</i> (Nghi vấn thiếu điều kiện $\\sigma^2 > 1$).</div>
+            <div class="btns">
+              <button class="btn danger" onclick="$('#modal-ta').classList.add('show')"><span class="n">4</span>Gửi báo lỗi Mục §3.3 tới Giảng viên/TA</button>
+              ${btnSwitchSc}
+            </div>
+          `);
+        }
+      }
+      $('#chat').innerHTML = html;
+
+      const promises = {
+        1: '"Mình chỉ chỉ ra mục tài liệu nào liên quan, bạn tự đọc và tự giải." An toàn tuyệt đối về quy chế, nhưng học viên đang bí lúc 22h30 dễ bỏ cuộc vì thiếu dẫn dắt.',
+        2: '"Mình dẫn chứng từng mục tài liệu, gợi ý từng nấc nhỏ theo xác nhận của bạn, khoá cứng đáp số bài đang mở và gắn cờ báo Giảng viên khi tài liệu có mâu thuẫn." <b>(Mức nhóm chọn)</b>',
+        3: '"Mình giải chi tiết hoặc khẳng định ngay theo tài liệu." Nhanh nhất nhưng gây hại âm thầm: làm lộ đáp số bài đang mở và hùa theo lỗi sai trong giáo trình.'
+      };
+      $('#promise').innerHTML = promises[LV];
+
+      const lvTag = {
+        1: ['Chỉ nhắc mục', 'p-auto', 'Không lộ đáp số nhưng quá thụ động khi học viên kẹt bài lúc tối muộn.'],
+        2: ['Tự làm bước 1 + Cần duyệt nấc sau', 'p-ask', 'Tự soạn gợi ý bước 1; học viên xác nhận mới mở tiếp nấc 2 và khoá cứng đáp số cuối.'],
+        3: ['Tự giải toàn bộ', 'p-no', 'Sai phạm học thuật: lộ đáp số bài đang mở, không đảo lại được một khi học viên đã thấy.']
+      }[LV];
+
+      const toolsData = [
+        ['tra_cuu_tai_lieu', 'Tự làm', 'p-auto', 'Chỉ đọc giáo trình §3.1–§3.5 và lịch bài tập.'],
+        ['soan_goi_y / gui_goi_y_sau', lvTag[0], lvTag[1], lvTag[2], true],
+        ['chuyen_TA', 'Cần người duyệt', 'p-ask', 'Học viên xác nhận gửi (kèm cảnh báo ngoài giờ trực 08:00–22:00) để tránh spam hàng chờ TA.'],
+        ['dang_FAQ', 'Cấm', 'p-no', 'Sai thì cả lớp đọc và học sai theo; chỉ Giảng viên/TA mới có quyền đăng FAQ chung.']
+      ];
+      $('#tools').innerHTML = toolsData.map(r =>
+        `<tr class="${r[4] ? 'changed' : ''}"><td><code>${r[0]}</code></td><td><span class="pill ${r[2]}">${r[1]}</span></td><td>${r[3]}</td></tr>`
+      ).join('');
+
+      const annItems = [
+        ['1', 'HAX G2 · Làm rõ AI làm tốt tới đâu', 'Nhãn trạng thái màu vàng/đỏ báo rõ ranh giới quy chế hoặc cảnh báo mâu thuẫn tài liệu.'],
+        ['2', 'HAX G11 + PAIR Explainability', 'Khung "Căn cứ trích dẫn" dẫn nguyên văn mã mục (§3.1–§3.5) để học viên tự kiểm chứng.'],
+        ['3', 'HAX G10 · Thu hẹp phạm vi khi gặp ranh giới', 'Không đoán bừa hay giải hộ; thu hẹp thành câu hỏi gợi mở bước 1 hoặc tách bạch điều kiện toán học.'],
+        ['4', 'Mức tự chủ Cần xác nhận', 'Học viên chủ động bấm mở thêm từng nấc gợi ý nhỏ hoặc xác nhận gửi phiếu báo lỗi tài liệu.'],
+        ['5', 'PAIR Errors + Graceful Failure', 'Luôn có nút chuyển tiếp tới TA kèm tóm tắt sẵn ngữ cảnh và thông báo rõ giờ trực 08:00–22:00.'],
+        ['6', 'HAX G9 · Sửa / Chuyển tình huống dễ', 'Chuyển đổi nhanh giữa các ca khó mà không cần gõ lại câu hỏi từ đầu.']
+      ];
+      $('#ann-list').innerHTML = annItems.map(a =>
+        `<li><span class="n">${a[0]}</span><b>${a[1]}</b> — ${a[2]}</li>`
+      ).join('');
+    }
+
+    function switchSc() {
+      SC = SC === 1 ? 2 : 1;
+      step = 0;
+      document.querySelectorAll('[data-sc]').forEach(b => b.classList.toggle('on', +b.dataset.sc === SC));
+      render();
+    }
+
+    document.querySelectorAll('[data-sc]').forEach(b => b.onclick = () => {
+      SC = +b.dataset.sc; step = 0;
+      document.querySelectorAll('[data-sc]').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); render();
+    });
+
+    document.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => {
+      LV = +b.dataset.lv; step = 0;
+      document.querySelectorAll('[data-lv]').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); render();
+    });
+
+    $('#ann').onchange = e => document.body.classList.toggle('hide-n', !e.target.checked);
+    $('#close-ta').onclick = () => $('#modal-ta').classList.remove('show');
+    $('#confirm-ta').onclick = () => { $('#modal-ta').classList.remove('show'); step = 2; render(); };
+
+    render();
+  </script>
+</body>
+</html>
